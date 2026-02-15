@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Fallbeispiel</title>
+  </head>
+
+  <body>
+    <h1>Flügel, Pflüger & Vlogtman GmbH & Co. KG</h1>
+
+    <fieldset>
+      <legend>Suchoptionen</legend>
+
+      <table>
+
+        <tr>
+
+          <!-- Search options for departures -->
+          <td>
+            <fieldset>
+              <legend>Hinflug</legend>
+
+              <label for="depature_date">Datum</label>
+              <input id="depature_date" type="date" />
+              <br/>
+
+              <label for="departure_from">Von</label>
+              <input id="departure_from" type="text"/>
+              <br/>
+
+              <label for="departure_to">Nach</label>
+              <input id="departure_to" type="text"/>
+            </fieldset>
+          </td>
+
+          <!-- Optional search options for arrivals -->
+          <td>
+            <fieldset>
+              <legend>
+                <input type="checkbox" id="include_arrivals" name="include_arrivals" />
+                Rückflug
+              </legend>
+              <label for="arrival_date">Datum</label>
+              <input id="arrival_date" type="date" />
+              <br/>
+
+              <label for="arrival_from">Von</label>
+              <input id="arrival_from" type="text"/>
+              <br/>
+
+              <label for="arrival_to">Nach</label>
+              <input id="arrival_to" type="text"/>
+            </fieldset>
+          </td>
+
+          <!-- Further miscellaneous search options -->
+          <td>
+            <label for="non_stop_only">Nur Direktflüge</label>
+            <input id="non_stop_only" type="checkbox" />
+            <br/>
+
+            <label for="max_price">Höchstpreis</label>
+            <input id="max_price" type="number" />
+            <br/>
+
+            <input type="submit" value="Suchen" />
+
+          </td>
+        </tr>
+      </table>
+    </fieldset>
+      
+    <fieldset>
+      <legend>Ihre Flugoptionen</legend>
+    </fieldset>
+
+    <fieldset>
+      <legend>Ihre Auswahl</legend>
+    </fieldset>
+
+  </body>
+</html>

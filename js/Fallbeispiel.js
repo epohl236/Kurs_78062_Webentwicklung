@@ -39,8 +39,8 @@ function showSearchResults (aAirports, parent)
  * the table.
  * 
  * In this app, the div's id can be derived from the input's id.
- * By convention, if the input's id is "<someId>", the associated div's
- * id must be "<someId>_list".
+ * By convention, if the input's id is "someId", the associated div's
+ * id must be "someId_list".
  * 
  * @param {HTMLElement} input - the input element where the search
  * string was entered
@@ -94,9 +94,10 @@ function handleInput (ev)
 /**
  * Given a td of a search results table embedded in a div, find the
  * associated input used to enter search criteria.
+ *
  * In this app, the input's id can be derived from the div's id. By
- * convention, if the input's id is "<someId>", the associated div's id
- * must be "<someId>_list".
+ * convention, if the input's id is "someId", the associated div's id
+ * must be "someId_list".
  * 
  * @param {HTMLElement} td  - The td of the table containing the
  * accepted search result

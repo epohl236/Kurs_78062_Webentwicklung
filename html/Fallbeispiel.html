@@ -8,6 +8,8 @@
    	<!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /> -->
 
     <script src="../js/airports_data.js"></script>
+    <script src="../js/routes_data.js"></script>
+    <script src="../js/routeSearch.js"></script>
     <script src="../js/airportSearch.js"></script>
     <script src="../js/Fallbeispiel.js"></script>
 
@@ -17,7 +19,7 @@
       * {font-family: Verdana, sans-serif; font-size: 13px;}
 
       .fett {font-weight: 900;}
-      .bg_green {background-color: green;}
+      .bg_green {background-color: lightgreen;}
       .bg_red {background-color: red; color: white;}
       .float_left {float:left;}
       .flight_options tr:hover {background-color: blueviolet; color: white}
@@ -70,8 +72,8 @@
         <fieldset class="float_left">
           <legend>Hinflug</legend>
 
-          <label for="depature_date">Datum</label>
-          <input id="depature_date" type="date" />
+          <label for="departure_date">Datum</label>
+          <input id="departure_date" type="date" />
           <br/>
 
           <label for="departure_from">Von</label>
@@ -79,12 +81,14 @@
           <br/>
 
           <div id="departure_from_list">
+            <!-- Table of matching airports to be inserted here -->
           </div>
 
           <label for="departure_to">Nach</label>
           <input id="departure_to" type="text"/>
 
           <div id="departure_to_list">
+            <!-- Table of matching airports to be inserted here -->
           </div>          
         </fieldset>
 
@@ -103,12 +107,14 @@
           <br/>
 
           <div id="arrival_from_list">
+            <!-- Table of matching airports to be inserted here -->
           </div>          
 
           <label for="arrival_to">Nach</label>
           <input id="arrival_to" type="text"/>
 
           <div id="arrival_to_list">
+            <!-- Table of matching airports to be inserted here -->
           </div>          
 
         </fieldset>
@@ -134,7 +140,7 @@
             <input id="max_price" type="number" />
             <br/>
 
-            <input type="submit" value="Suchen" />
+            <input id="btn_search" type="submit" value="Suchen" />
         </fieldset>
 
       </fieldset>
@@ -143,6 +149,14 @@
 
       <fieldset>
         <legend>Ihre Flugoptionen</legend>
+        <div id="departure_routes">
+            <!-- Table of matching routes to be inserted here -->
+        </div>
+        <div id="arrival_routes">
+            <!-- Table of matching routes to be inserted here -->
+        </div>
+
+        <!--
         <p>Flüge von Düsseldorf International Airport (DUS) nach London Heathrow Airport (LHR)</p>
         <table class="bg_green flight_options">
           <tr>
@@ -173,21 +187,24 @@
             <td>1.4 h</td>
           </tr>
         </table>
+        -->
       </fieldset>
  
 
 
       <fieldset>
         <legend>Ihre Auswahl</legend>
-        <p>
-          Sie fliegen von Düsseldorf International Airport, Germany nach London
-          Heathrow Airport, United Kingdom. Die voraussichtliche Flugzeit beträgt
-          1 Stunden und 24 Minuten. Der Flug wird von British Airways mit Sitz in
-          United Kingdom durchgeführt.
-        </p>
-        <p>Die Distanz beträgt: <span class="fett">502 km.</span></p>
-        <p>Abflug- und Zielort haben einen Höhenunterschied von: <span class="fett">-64m</span></p>
-        </p>
+        <div id="flight_description">
+          <p>
+            Sie fliegen von Düsseldorf International Airport, Germany nach London
+            Heathrow Airport, United Kingdom. Die voraussichtliche Flugzeit beträgt
+            1 Stunden und 24 Minuten. Der Flug wird von British Airways mit Sitz in
+            United Kingdom durchgeführt.
+          </p>
+          <p>Die Distanz beträgt: <span class="fett">502 km.</span></p>
+          <p>Abflug- und Zielort haben einen Höhenunterschied von: <span class="fett">-64m</span></p>
+          </p>
+        </div>
       </fieldset>
     </main>
   </body>

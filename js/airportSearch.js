@@ -203,5 +203,3 @@ function installAirportSearchEventHandlers()
     installAirportSearchClickHandler ("#arrival_to_list");
 }
 
-
-window.addEventListener ("DOMContentLoaded", installAirportSearchEventHandlers);

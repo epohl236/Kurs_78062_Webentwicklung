@@ -2,7 +2,11 @@
  * @file Scripts for Fallbeispiel.html
  * 
  * Load the following files before this file:
+ * - airlines_data.js
+ * - airport_data.js
  * - routes_data.js
+ * - routeSearch.js
+ * - airportSearch.js
  */
 
 function installSearchBtnClickHandler()
@@ -18,6 +22,7 @@ function installSearchBtnClickHandler()
 function installEventHandlers()
 {
     installAirportSearchEventHandlers();
+    installRoutesSearchEventHandlers();
     installSearchBtnClickHandler();
 }
 

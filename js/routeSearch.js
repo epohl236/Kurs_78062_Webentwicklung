@@ -3,38 +3,11 @@
  * flights matching the search results from airportSearch.js
  * 
  * Load the following files before this file:
+ * - globalConstants.js
+ * - airport_data.js
+ * - airlines_data.js
  * - routes_data.js
  */
-
-/*
-The following code is based on the structure of array routes[] in
-routes_data.js. Each routes[] element is itself an array of details
-describing a route:
-
-[0]: Route ID number
-[1]: Airline IATA code
-[2]: Source airport IATA code
-[3]: Destination airport IATA code
-[4]: Distance between source and destination (km)
-[5]: Flight time (h)
-[6]: Price (EUR)
-[7]: Departure times for each day of week. Formatted as a list of times
-    separated by dashes, like
-    "10:00-5:00-16:00-17:00-0-8:00-0"
-    where the first element is the departure time on Monday etc.
-    0 means that the route is not served on this day of week.
-*/
-
-// Array indexes in routes[i][]
-const IROUTEID = 0;
-const IAIRLINEIATA = 1;
-const ISOURCEIATA = 2;
-const IDESTINATIONIATA = 3;
-const IDISTANCE = 4;
-const IFLIGHTTIME = 5;
-const IPRICE = 6;
-const IFLIGHTPLAN = 7;
-
 
 /**
  * From a string like "Frankfurt am Main International Airport (FRA)"
@@ -59,6 +32,15 @@ function extractIATA (airportNameAndIATA)
 }
 
 
+/**
+ * Get source and destination airport names and IATA codes
+ * from input elements where the user entered them. Both inputs should
+ * be formatted like "<airport name> (<IATA>)".
+ * 
+ * @param {string} inputFromId - ID of input element with source airport
+ * @param {string} inputToId - ID of input element with destination airport
+ * @returns {object} Object {fromIATA, toIATA, fromAirport, toAirport}
+ */
 function getFlightFromToIATA (inputFromId, inputToId)
 {
     let fromIATA = null;
@@ -80,10 +62,29 @@ function getFlightFromToIATA (inputFromId, inputToId)
         toAirport = inputTo.value;
     }
 
-    return [fromIATA, toIATA, fromAirport, toAirport];
+    oRet =
+    {
+        fromIATA: fromIATA,
+        toIATA: toIATA,
+        fromAirport: fromAirport,
+        toAirport: toAirport
+    };
+    
+    return oRet;
 }
 
 
+/**
+ * Get the departure time of a flight route depending on the day of week
+ * 
+ * @param {array} aRoute - Array with details describing a flight route.
+ * Must be structured like an element of array routes[] (routes_data.js)
+ * 
+ * @param {integer} nDayOfWeek - Day of week number (1..7, 1 == Mo)
+ * 
+ * @returns {string} - Departure time like "09:00" of flight on that day
+ * of week. "0" means that the route is not served on that day.
+ */
 function getFlightTime (aRoute, nDayOfWeek)
 {
     if (nDayOfWeek < 1 || nDayOfWeek > 7)
@@ -93,15 +94,15 @@ function getFlightTime (aRoute, nDayOfWeek)
     }
 
     // aRoute[IFLIGHTPLAN]: "10:00-5:00-16:00-17:00-0-8:00-0"
-    const aDepTimes = aRoute[IFLIGHTPLAN].split ("-");
+    const aDepTimes = aRoute[IROUTE_FLIGHTPLAN].split ("-");
     if (aDepTimes.length != 7)
     {
-        console.log (`getFlightTime(): Invalid flight plan in route ${aRoute[IROUTEID]}: "${aRoute[IFLIGHTPLAN]}"`);
+        console.log (`getFlightTime(): Invalid flight plan in route ${aRoute[IROUTE_ID]}: "${aRoute[IROUTE_FLIGHTPLAN]}"`);
         return "0";
     }
 
     // Note that nDayOfWeek is 1-based (1 == Mo), but aDepTimes[]
-    // is 0-based
+    // is 0-based (0 == Mo)
     return aDepTimes[nDayOfWeek - 1];
 }
 
@@ -133,7 +134,6 @@ function showRoutesSearchResults (aRoutes, nDayOfWeek, parent)
         // First examine the flight times. If the route is not served
         // on nDayOfWeek, skip this route.
         const strDepartureTime = getFlightTime (aRoute, nDayOfWeek);
-        //console.log (`showRoutesSearchResults() route ${aRoute[IROUTEID]} departure time: ${strDepartureTime}`);
         if (strDepartureTime == "0")
             continue;
 
@@ -141,7 +141,7 @@ function showRoutesSearchResults (aRoutes, nDayOfWeek, parent)
 
         // Omit the route ID number from the row but add it as
         // the row's id
-        newRow.id = aRoute[IROUTEID];
+        newRow.id = aRoute[IROUTE_ID];
 
         // Create row cells:
         // 0: Airline IATA
@@ -152,13 +152,13 @@ function showRoutesSearchResults (aRoutes, nDayOfWeek, parent)
         // 5: Distance (km)
         // 6: Flight time (h)
         const aCellContents = [
-            aRoute[IAIRLINEIATA],
-            aRoute[ISOURCEIATA],
-            aRoute[IDESTINATIONIATA],
-            aRoute[IPRICE] + " €",
+            aRoute[IROUTE_AIRLINEIATA],
+            aRoute[IROUTE_SOURCEIATA],
+            aRoute[IROUTE_DESTINATIONIATA],
+            aRoute[IROUTE_PRICE] + " €",
             strDepartureTime + " Uhr",
-            aRoute[IDISTANCE] + " km",
-            aRoute[IFLIGHTTIME] + " h"
+            aRoute[IROUTE_DISTANCE] + " km",
+            aRoute[IROUTE_FLIGHTTIME] + " h"
         ];
 
         for (content of aCellContents)
@@ -171,28 +171,41 @@ function showRoutesSearchResults (aRoutes, nDayOfWeek, parent)
         newTable.appendChild (newRow);
 
         // Keep track of the lowest price
-        const nPrice = Number.parseFloat (aRoute[IPRICE]);
+        const nPrice = Number.parseFloat (aRoute[IROUTE_PRICE]);
         if (nMinPrice == 0 || nPrice < nMinPrice)
         {
             nMinPrice = nPrice;
-            idOfMinRow = aRoute[IROUTEID];
+            idOfMinRow = aRoute[IROUTE_ID];
         }
     }
 
     parent.appendChild (newTable);
 
     // Highlight the row with the lowest price
-    //console.log ("Min price:", nMinPrice, "id:", idOfMinRow);
     if (idOfMinRow != null)
     {
         let minRow = document.getElementById (idOfMinRow);
-        //console.log (minRow);
         if (minRow != null && minRow.tagName == "TR")
             minRow.className = "bg_red";
     }
 }
 
 
+
+/**
+ * Shows a list of flights matching the user's search criteria, either
+ * for outbound flights or inbound flights.
+ * 
+ * The caller defines whether outbound or inbound flights are searched
+ * by providing the IDs of either the "from" airport inputs or the
+ * "to" airport inputs.
+ * 
+ * @param {string} inputFlightDateId - ID of input with departure date
+ * @param {string} inputFromId - ID of input with "from" airport
+ * @param {string} inputToId - ID of input with "to" airport
+ * @param {string} divParentId - ID of a div where the result list
+ * should be embedded as a child
+ */
 function showMatchingRoutesSingleDirection (inputFlightDateId, inputFromId, inputToId, divParentId)
 {
     let divParent = document.getElementById (divParentId);
@@ -214,20 +227,25 @@ function showMatchingRoutesSingleDirection (inputFlightDateId, inputFromId, inpu
         return;
     }
 
+    const strFlightDate = inputFlightDate.value;
+    if (strFlightDate == "")
+    {
+        console.log (`Flight date input with id "${inputFlightDateId}" is empty`);
+        return;
+    }
+
     // Value: "2026-03-12"
     // Calculate the day of week (1..7, 1 == Monday etc.)
     const dateFlight = Temporal.PlainDate.from (inputFlightDate.value);
     const nDayOfWeek = dateFlight.dayOfWeek;
-    //console.log ("Departure date:", departureDate.value, "day of week:", nDayOfWeek);
 
-    const [fromIATA, toIATA, fromAirport, toAirport] = getFlightFromToIATA (inputFromId, inputToId);
-    //console.log (`showMatchingDepartures(): fromIATA=${fromIATA}, toIATA=${toIATA}`);
-    if (fromIATA == null || toIATA == null)
+    const oFlightFromToIATA = getFlightFromToIATA (inputFromId, inputToId);
+    if (oFlightFromToIATA.fromIATA == null || oFlightFromToIATA.toIATA == null)
     {
-        if (fromIATA == null)
+        if (oFlightFromToIATA.fromIATA == null)
             console.log ("'From' airport IATA is null");
 
-        if (toIATA == null)
+        if (oFlightFromToIATA.toIATA == null)
             console.log ("'To' airport IATA is null");
 
         return;
@@ -236,12 +254,10 @@ function showMatchingRoutesSingleDirection (inputFlightDateId, inputFromId, inpu
     // Show a title like
     // "Flüge von Frankfurt am Main International Airport (FRA) nach London Heathrow Airport (LHR)"
     let title = document.createElement ("p");
-    title.innerText = "Flüge von " + fromAirport + " nach " + toAirport;
+    title.innerText = "Flüge von " + oFlightFromToIATA.fromAirport + " nach " + oFlightFromToIATA.toAirport;
     divParent.appendChild (title);
 
-    let aRoutes = search_route (fromIATA, toIATA);
-    //console.log (aDepartures);
-
+    let aRoutes = search_route (oFlightFromToIATA.fromIATA, oFlightFromToIATA.toIATA);
     showRoutesSearchResults (aRoutes, nDayOfWeek, divParent);
 }
 
@@ -269,6 +285,76 @@ function showMatchingRoutes()
 
 
 /**
+ * Get some properties of an airline
+ * 
+ * @param {string} airlineIATA - Airline IATA code
+ * @returns {object} Object {IATA, Name, Country}
+ */
+function getAirlineProperties (airlineIATA)
+{
+    const airlineDetails = airline_details (airlineIATA);
+    if (airlineDetails.length <= 0)
+        return;
+
+    let oRet =
+    {
+        IATA: airlineIATA,
+        Name: airlineDetails[IAIRLINE_NAME],
+        Country: airlineDetails[IAIRLINE_COUNTRY]
+    }
+
+    return oRet;
+}
+
+
+/**
+ * Get some properties of an airport
+ * 
+ * @param {*} airportIATA - Airport IATA
+ * @returns {object} Object {IATA, Name, Country, AltitudeFt}
+ */
+function getAirportProperties (airportIATA)
+{
+    const airportDetails = airport_details (airportIATA);
+    if (airportDetails.length <= 0)
+        return null;
+
+    let oRet = 
+    {
+        IATA: airportIATA,
+        Name: airportDetails[IAIRPORT_NAME],
+        Country: airportDetails[IAIRPORT_COUNTRY],
+        AltitudeFt: airportDetails[IAIRPORT_ALTITUDE]
+    }
+
+    return oRet;
+}
+
+
+/**
+ * Get some properties of a flight route
+ * 
+ * @param {string} routeId - ID number of route in array routes[]
+ * @returns {object} Object {Id, FlightTime, DistanceKm}
+ */
+function getRouteProperties (routeId)
+{
+    const routeDetails = route_details (routeId);
+    if (routeDetails.length <= 0)
+        return null;
+
+    let oRet = 
+    {
+        Id: routeId,
+        FlightTime: routeDetails[IROUTE_FLIGHTTIME],
+        DistanceKm: routeDetails[IROUTE_DISTANCE]
+    }
+
+    return oRet;
+}
+
+
+/**
  * Handler for the click event in the search results table.
  * Creates a text describing the selected flight within the
  * fieldset labeled "Ihre Auswahl"
@@ -283,10 +369,38 @@ function handleRoutesSearchListClick (ev)
     // Delete previous description
     divFlightDescription.replaceChildren();
 
+    // For this text we need details about airports, the route, and
+    // the airline.
+    //
     // ev.target should be the td element clicked in the search
-    // results table.
-    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    input.value = ev.target.innerText;
+    // results table. Get the IATA codes of airline, source airport,
+    // and destination airport from the clicked row. By convention, 
+    // the are the first, second, and third td in the row.
+    // Also get the route's ID number which should be the row's id.
+    tr = ev.target.parentElement;
+    if (tr == null || tr.tagName != "TR")
+        return;
+
+    const routeId = tr.id;
+
+    let td = tr.firstElementChild;
+    const airlineIATA = td.innerText;
+    td = td.nextElementSibling;
+    const srcAirportIATA = td.innerText;
+    td = td.nextElementSibling;
+    const destAirportIATA = td.innerText;
+
+    const oAirlineDetails = getAirlineProperties (airlineIATA);
+    const oSrcAirportDetails = getAirportProperties (srcAirportIATA);
+    const oDestAirportDetails = getAirportProperties (destAirportIATA);
+    const oRouteDetails = getRouteProperties (routeId);
+
+    const nFlightTime = Number.parseFloat (oRouteDetails.FlightTime);
+    // like 1.6
+    const nFlightTimeHours = Math.trunc (nFlightTime);
+    const nFlightTimeMinutes = Math.round ((nFlightTime - nFlightTimeHours) * 60);
+    const nAltitudeDiffM = Math.round ((oDestAirportDetails.AltitudeFt - oSrcAirportDetails.AltitudeFt) * METERPERFOOT);
+
 
     // Construct a text like:
     // "Sie fliegen von <source_airport_name>, <source_airport_country>
@@ -298,23 +412,43 @@ function handleRoutesSearchListClick (ev)
     // Die Distanz beträgt: <distance> km.
     //
     // Abflug- und Zielort haben einen Höhenunterschied von: <altitude_difference>m"
+    description = "Sie fliegen von ";
+    description += oSrcAirportDetails.Name;
+    description += ", ";
+    description += oSrcAirportDetails.Country;
+    description += " nach ";
+    description += oDestAirportDetails.Name;
+    description += ", ";
+    description += oDestAirportDetails.Country;
+    description += ". Die voraussichtliche Flugzeit beträgt ";
+    description += nFlightTimeHours.toString();
+    description += " Stunden und ";
+    description += nFlightTimeMinutes.toString();
+    description += " Minuten. Der Flug wird von ";
+    description += oAirlineDetails.Name;
+    description += " mit Sitz in ";
+    description += oAirlineDetails.Country;
+    description += " durchgeführt.";
+    
+    let pDescription = document.createElement ("p");
+    pDescription.innerText = description;
+    divFlightDescription.appendChild (pDescription);
 
-    // Airport properties
-    const srcAirportName = null;
-    const srcAirportCountry = null;
-    const srcAirportAltitudeFt = null;
-    const destAirportName = null;
-    const destAirportCountry = null;
-    const destAirportAltitudeFt = null;
+    description = "Die Distanz beträgt: <span class='fett'>";
+    description += oRouteDetails.DistanceKm.toString();
+    description += " km.</span>"
 
-    // Route properties
-    const flightTime = null;
-    const distanceKm = null;
+    pDescription = document.createElement ("p");
+    pDescription.innerHTML = description;
+    divFlightDescription.appendChild (pDescription);
 
-    // Airline properties
-    const airlineName = null;
-    const airlineCountry = null;
+    description = "Abflug und Zielort haben einen Höhenunterschied von: <span class='fett'>";
+    description += nAltitudeDiffM.toString();
+    description += "m</span>";
 
+    pDescription = document.createElement ("p");
+    pDescription.innerHTML = description;
+    divFlightDescription.appendChild (pDescription);
 }
 
 

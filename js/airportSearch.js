@@ -1,8 +1,10 @@
 /**
  * @file Implements the airport search feature in Fallbeispiel.html
  * 
- * Load airport_data.js before this file.
- */
+ * Load the following files before this file:
+ * - globalConstants.js
+ * - airport_data.js
+*/
 
 
 /**
@@ -10,7 +12,8 @@
  * 
  * @param {array} aAirports - Array of search results as returned
  * by the search_airport() function (airpoprt_data.js).
- * Element[1] must be an airport's name, element[4] the IATA code.
+ * Must be structured as described in globalConstants.js for array
+ * airports[].
  * @param {*} parent - The parent element to which the table should
  * be added as a child. Usually a div element.
  */
@@ -25,7 +28,7 @@ function showAirportSearchResults (aAirports, parent)
         let newRow = document.createElement ("tr");
 
         let newCell = document.createElement ("td");
-        newCell.innerText = `${aAirport[1]} (${aAirport[4]})`
+        newCell.innerText = `${aAirport[IAIRPORT_NAME]} (${aAirport[IAIRPORT_IATA]})`
         // "London Heathrow Airport (LHR)"
         newRow.appendChild (newCell);
 
@@ -123,7 +126,6 @@ function getAssociatedInput (td)
         return null;
 
     let inputId = divListId.slice (0, -5);
-    //console.log ("getAssociatedInput() inputId:", inputId);
     return document.getElementById (inputId);
 }
 
@@ -136,8 +138,6 @@ function getAssociatedInput (td)
  */
 function handleAirportSearchListClick (ev)
 {
-    //console.log (ev);
-
     // ev.target should be the td element clicked in the search
     // results table. Copy its text into the associated input.
     var input = getAssociatedInput (ev.target);

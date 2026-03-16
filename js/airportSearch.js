@@ -30,6 +30,11 @@ function showAirportSearchResults (aAirports, parent)
         let newCell = document.createElement ("td");
         newCell.innerText = `${aAirport[IAIRPORT_NAME]} (${aAirport[IAIRPORT_IATA]})`
         // "London Heathrow Airport (LHR)"
+
+        // Add a tabindex to the td so it can receive keyboard focus
+        // See "6.6.3 The tabindex attribute"
+        // https://html.spec.whatwg.org/multipage/interaction.html#the-tabindex-attribute
+        newCell.setAttribute ("tabindex", "0");
         newRow.appendChild (newCell);
 
         newTable.appendChild (newRow);
@@ -101,6 +106,49 @@ function handleAirportSearchInput (ev)
 }
 
 
+function handleAirportSearchInputKbd (ev)
+{
+    //console.log (ev);
+
+    // ev.target should be the affected input. Find its associated
+    // search list (the div where the search results will be shown)
+
+    let input = ev.target;
+    if (input == null || input.tagName != "INPUT")
+        return;
+    
+    let divList = getAssociatedSearchList (input);
+    if (divList == null || divList.tagName != "DIV")
+        return;
+
+    switch (ev.key)
+    {
+        case "ArrowDown":
+        {
+            // Move focus to the associated search list
+            let table = divList.firstChild;
+            if (table == null || table.tagName != "TABLE")
+                return;
+
+            let tr = table.firstChild;
+            if (tr == null || tr.tagName != "TR")
+                return;
+
+            tr.firstChild.focus();
+        }
+        break;
+
+        case "Escape":
+        {
+            // Clear input contents and clear search results
+            divList.replaceChildren();
+            input.value = null;
+        }
+        break;
+    }
+}
+
+
 /**
  * Given a td of a search results table embedded in a div, find the
  * associated input used to enter search criteria.
@@ -154,6 +202,136 @@ function handleAirportSearchListClick (ev)
 
 
 /**
+ * Handler for the mouseover event in the search results table.
+ * Moves the focus to the td entered by the mouse.
+ * 
+ * The purpose is to synchronize the rows selected by keyboard and
+ * by mouse.
+ * 
+ * Without this handler, a row could be selected by the
+ * mouse and another by the keyboard handler (handleAirportSearchListKbd()).
+ * Both would be highlighted by the :hover pseudo-class (see CSS) and the
+ * keyboard focus. This could be confusing to the user.
+ * 
+ * Using this handler, mouse hovering in the list has the same effect as
+ * keyboard navigation. There is always only one row selected and it has
+ * focus. This makes the :hover pseudo-class rule redundant.
+ * @param {event} ev - A mouseover event in the search result table
+ * @returns 
+ */
+function handleAirportSearchListMouseOver (ev)
+{
+    // ev.target is either the table or a td within the table.
+    // If a td, move focus there.
+    //console.log (ev.target.tagName);
+
+    if (ev.target.tagName == "TD")
+        ev.target.focus();
+
+    return;
+}
+
+
+/**
+ * Handler for the keydown event in the search results table.
+ * - Arrow keys navigate up and down within the table
+ * - Arrow up from the top row moves back to the input
+ * - Enter copies the text of the clicked table cell into the input
+ * where the search string was entered.
+ * @param {event} ev - A keydown event in the search result table
+ */
+function handleAirportSearchListKbd (ev)
+{
+    //console.log (ev);
+
+    // ev.target should be a td element in the search results table.
+    let tdSrc = ev.target;
+    if (tdSrc == null || tdSrc.tagName != "TD")
+        return;
+
+    let trSrc = tdSrc.parentElement;
+    if (trSrc == null || trSrc.tagName != "TR")
+        return;
+
+    let table = trSrc.parentElement;
+    if (table == null || table.tagName != "TABLE")
+        return;
+
+    switch (ev.key)
+    {
+        case "ArrowDown":
+        {
+            // Move focus to next row down
+            let trDest = trSrc.nextElementSibling;
+
+            if (trDest == null || trDest.tagName != "TR")
+            {
+                // If no next row down, wrap around to top row
+                trDest = table.firstElementChild;
+
+                // No top row: this should never happen as a td
+                // received an event.
+                if (trDest == null || trDest.tagName != "TR")
+                    return;
+            }
+
+            // Set focus to trDest.
+            // Note that a tr cannot receive focus, only a td.
+            // Search tables in this app have only one column,
+            // so the first td in the row should do.
+            trDest.firstChild.focus();
+        }
+        break;
+    
+        case "ArrowUp":
+        {
+            // Move focus to next row up
+            let trDest = trSrc.previousElementSibling;
+            if (trDest != null && trDest.tagName == "TR")
+            {
+                trDest.firstChild.focus();
+                return;
+            }
+
+            // If no next row up, move back to the input
+            let input = getAssociatedInput (tdSrc);
+            if (input != null && input.tagName == "INPUT")
+            {
+                input.focus();
+                return;
+            }
+
+            // If input not found, move to last row
+            trDest = table.lastElementChild;
+            if (trDest != null && trDest.tagName == "TR")
+            {
+                trDest.firstChild.focus();
+                return;
+            }
+        }
+        break;
+        
+        case "Enter":
+        {
+            // Copy tdSrc's text into the associated input.
+            let input = getAssociatedInput (tdSrc);
+            if (input != null && input.tagName == "INPUT")
+            {
+                input.value = tdSrc.innerText;
+                input.focus();
+            }
+
+            // Then delete the list
+            let divList = table.parentElement;
+            if (divList != null && divList.tagName == "DIV")
+                divList.replaceChildren();
+        }
+        break;
+    }
+}
+
+
+/**
  * Installs a handler for the input event on an input control
  * 
  * @param {string} id - The input's id
@@ -165,18 +343,44 @@ function installAirportSearchInputHandler (id)
         return;
 
     input.addEventListener ("input", handleAirportSearchInput);
+    input.addEventListener ("keydown", handleAirportSearchInputKbd);
 }
 
 
 /**
- * Installs a handler for the click event on a search results table
+ * Installs handlers for mouse events in a search results table:
+ * - click
+ * - mouseover
  * 
  * @param {string} id - The id of a div containing the table
  */
-function installAirportSearchClickHandler (id)
+function installAirportSearchMouseHandler (id)
+{
+    // The handlers are installed on the div, but they are actually
+    // intended to handle events in the search results table
+    // embedded in the div.
+    // The handlers are not installed on the table because the table
+    // exists only temporarily, while search criteria are being entered
+    // in the associated input.
+    // By way of bubbling, table events can be handled in the div.
+    var divList = document.querySelector (id);
+    if (divList == null || divList.tagName != "DIV")
+        return;
+
+    divList.addEventListener ("click", handleAirportSearchListClick);
+    divList.addEventListener ("mouseover", handleAirportSearchListMouseOver);
+}
+
+
+/**
+ * Installs a handler for keyboard events on a search results table.
+ * 
+ * @param {string} id - The id of a div containing the table
+ */
+function installAirportSearchKbdHandler (id)
 {
     // The handler is installed on the div, but it is actually
-    // intended to handle clicks in the search results table
+    // intended to handle events in the search results table
     // embedded in the div.
     // The handler is not installed on the table because the table
     // exists only temporarily, while search criteria are being entered
@@ -186,7 +390,7 @@ function installAirportSearchClickHandler (id)
     if (divList == null || divList.tagName != "DIV")
         return;
 
-    divList.addEventListener ("click", handleAirportSearchListClick);
+    divList.addEventListener ("keydown", handleAirportSearchListKbd);
 }
 
 
@@ -197,9 +401,13 @@ function installAirportSearchEventHandlers()
     installAirportSearchInputHandler ("#departure_to");
     installAirportSearchInputHandler ("#arrival_from");
     installAirportSearchInputHandler ("#arrival_to");
-    installAirportSearchClickHandler ("#departure_from_list");
-    installAirportSearchClickHandler ("#departure_to_list");
-    installAirportSearchClickHandler ("#arrival_from_list");
-    installAirportSearchClickHandler ("#arrival_to_list");
+    installAirportSearchMouseHandler ("#departure_from_list");
+    installAirportSearchMouseHandler ("#departure_to_list");
+    installAirportSearchMouseHandler ("#arrival_from_list");
+    installAirportSearchMouseHandler ("#arrival_to_list");
+    installAirportSearchKbdHandler ("#departure_from_list");
+    installAirportSearchKbdHandler ("#departure_to_list");
+    installAirportSearchKbdHandler ("#arrival_from_list");
+    installAirportSearchKbdHandler ("#arrival_to_list");
 }
 

@@ -412,7 +412,7 @@ function handleRoutesSearchListClick (ev)
     // Die Distanz beträgt: <distance> km.
     //
     // Abflug- und Zielort haben einen Höhenunterschied von: <altitude_difference>m"
-    description = "Sie fliegen von ";
+    let description = "Sie fliegen von ";
     description += oSrcAirportDetails.Name;
     description += ", ";
     description += oSrcAirportDetails.Country;

@@ -1,0 +1,27 @@
+* {font-family: Verdana, sans-serif; font-size: 13px;}
+
+.fett {font-weight: 900;}
+.bg_green {background-color: lightgreen;}
+.bg_red {background-color: red; color: white;}
+.float_left {float:left;}
+.flight_options tr:hover {background-color: blueviolet; color: white}
+.searchList {margin-top: 10px; margin-bottom: 10px; background-color: lightgray; border: 1px solid black;}
+/* .searchList tr:hover {background-color: gray;}
+No longer using the :hover pseudo-class which was made redundant
+by a mouseover handler (handleAirportSearchListMouseOver()) */
+.searchList td:focus {background-color: gray;}
+
+@media (max-width: 600px)
+{
+    h1 {font-family: Impact, sans-serif; font-size: 14px; color: #16f}
+    td {padding: 2px 8px;}
+    /* On narrow screens, hide cols 2 and 3 of the flight options table */
+    .flight_options tr td:nth-child(2),
+    .flight_options tr td:nth-child(3) {display: none;}
+}
+
+@media (min-width: 600px)
+{
+    h1 {font-family: Impact, sans-serif; font-size: 22px; color: #16f}
+    td {padding: 2px 21px;}
+}

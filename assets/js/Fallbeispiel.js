@@ -19,6 +19,11 @@ function handleBtnSearchTouch()
 {
     alert ("touch");
 }
+
+function handleBtnSearchPtr()
+{
+    alert ("pointer");
+}
 //#####################################
 
 function installSearchBtnClickHandler()
@@ -32,6 +37,7 @@ function installSearchBtnClickHandler()
     //#####################################
     btnSearch.addEventListener ("click", handleBtnSearchClick);
     btnSearch.addEventListener ("touchstart", handleBtnSearchTouch);
+    btnSearch.addEventListener ("pointerdown", handleBtnSearchPtr);
     //#####################################
 
 }

@@ -10,7 +10,6 @@
 No longer using the :hover pseudo-class which was made redundant
 by a mouseover handler (handleAirportSearchListMouseOver()) */
 .searchList td:focus {background-color: gray;}
-#btn_search {position: relative; z-index: 999;}
 
 @media (max-width: 600px)
 {

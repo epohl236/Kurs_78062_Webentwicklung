@@ -6,11 +6,11 @@
 .float_left {float:left;}
 .flight_options tr:hover {background-color: blueviolet; color: white}
 .searchList {margin-top: 10px; margin-bottom: 10px; background-color: lightgray; border: 1px solid black;}
-.pointer {cursor: pointer;}
 /* .searchList tr:hover {background-color: gray;}
 No longer using the :hover pseudo-class which was made redundant
 by a mouseover handler (handleAirportSearchListMouseOver()) */
 .searchList td:focus {background-color: gray;}
+#btn_search {position: relative; z-index: 99;}
 
 @media (max-width: 600px)
 {

@@ -9,13 +9,31 @@
  * - airportSearch.js
  */
 
+//#####################################
+function handleBtnSearchClick()
+{
+    alert ("click");
+}
+
+function handleBtnSearchTouch()
+{
+    alert ("touch");
+}
+//#####################################
+
 function installSearchBtnClickHandler()
 {
     let btnSearch = document.getElementById ("btn_search");
     if (btnSearch == null)
         return;
 
-    btnSearch.addEventListener ("click", showMatchingRoutes);
+    //####### btnSearch.addEventListener ("click", showMatchingRoutes);
+
+    //#####################################
+    btnSearch.addEventListener ("click", handleBtnSearchClick);
+    btnSearch.addEventListener ("touchstart", handleBtnSearchTouch);
+    //#####################################
+
 }
 
 

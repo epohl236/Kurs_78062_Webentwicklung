@@ -9,37 +9,45 @@
  * - airportSearch.js
  */
 
-//#####################################
-function handleBtnSearchClick()
+/**
+ * Handler for the submit event of form #form_search_options.
+ * It is triggered by the submit button, or by hitting Enter in a field.
+ * 
+ * Handling submit is more reliable than handling click, touch, or
+ * pointer events on the submit button as different browsers handle such
+ * events in different ways. Particularly in the Samsung browser on
+ * mobile phones, touching the submit button hardly ever triggers a
+ * click event.
+ * @param {event} ev - A form's submit event
+ */
+function handleFormSearchOptionsSubmit (ev)
 {
-    alert ("click");
+    // Suppress default handling for the submit event.
+    // Default handling would clear the form and the search results
+    // shortly after submit. This makes it virtually impossible to view
+    // the results.
+    // Also we want the search criteria to remain so the user can modify
+    // them without having to re-enter all of them.
+    //
+    // Default handling is also not needed as we don't really want to
+    // submit data to a server. We only want to call the search function.
+    ev.preventDefault();
+
+    let btn = ev.submitter;
+    if (btn == null || btn.id != "btn_search")
+        return;
+    
+    showMatchingRoutes();
 }
 
-function handleBtnSearchTouch()
-{
-    alert ("touch");
-}
 
-function handleBtnSearchPtr()
+function installSubmitHandler()
 {
-    alert ("pointer");
-}
-//#####################################
-
-function installSearchBtnClickHandler()
-{
-    let btnSearch = document.getElementById ("btn_search");
-    if (btnSearch == null)
+    let formSearchOptions = document.getElementById ("form_search_options");
+    if (formSearchOptions == null)
         return;
 
-    //####### btnSearch.addEventListener ("click", showMatchingRoutes);
-
-    //#####################################
-    btnSearch.addEventListener ("click", handleBtnSearchClick);
-    btnSearch.addEventListener ("touchstart", handleBtnSearchTouch);
-    btnSearch.addEventListener ("pointerdown", handleBtnSearchPtr);
-    //#####################################
-
+    formSearchOptions.addEventListener ("submit", handleFormSearchOptionsSubmit);
 }
 
 
@@ -47,7 +55,7 @@ function installEventHandlers()
 {
     installAirportSearchEventHandlers();
     installRoutesSearchEventHandlers();
-    installSearchBtnClickHandler();
+    installSubmitHandler();
 }
 
 

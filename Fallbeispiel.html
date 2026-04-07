@@ -60,81 +60,86 @@
         fieldset without using a table, but give them float: left style.
         -->
 
-        <!-- Search options for departures -->
-        <fieldset class="float_left">
-          <legend>Hinflug</legend>
-
-          <label for="departure_date">Datum</label>
-          <input id="departure_date" type="date" />
-          <br/>
-
-          <label for="departure_from">Von</label>
-          <input id="departure_from" type="text"/>
-          <br/>
-
-          <div id="departure_from_list" tabindex="0">
-            <!-- Table of matching airports to be inserted here -->
-          </div>
-
-          <label for="departure_to">Nach</label>
-          <input id="departure_to" type="text"/>
-
-          <div id="departure_to_list">
-            <!-- Table of matching airports to be inserted here -->
-          </div>          
-        </fieldset>
-
-        <!-- Optional search options for arrivals -->
-        <fieldset class="float_left">
-          <legend>
-            <input type="checkbox" id="include_arrivals" name="include_arrivals" />
-            Rückflug
-          </legend>
-          <label for="arrival_date">Datum</label>
-          <input id="arrival_date" type="date" />
-          <br/>
-
-          <label for="arrival_from">Von</label>
-          <input id="arrival_from" type="text"/>
-          <br/>
-
-          <div id="arrival_from_list">
-            <!-- Table of matching airports to be inserted here -->
-          </div>          
-
-          <label for="arrival_to">Nach</label>
-          <input id="arrival_to" type="text"/>
-
-          <div id="arrival_to_list">
-            <!-- Table of matching airports to be inserted here -->
-          </div>          
-
-        </fieldset>
-
-        <!-- Further miscellaneous search options
-
-        Note: In the images on page
-        "4.5 CSS-Deklarationen" / "Fallbeispiel"
-        this fieldset is shown only on the browser screen, not on
-        the mobile device screen. The task description does not 
-        require that the fieldset should be hidden on mobile
-        devices, so it is not done here.
-        Also, if it were hidden it would be unclear which default
-        values to assume for the inputs.
+        <!-- Although a form wouldn't be needed for this example, we're
+        using one so we can handle the submit event.
+        See notes on Fallbeispiel.js, handleFormSearchOptionsSubmit().
         -->
-        <fieldset class="float_left">
-          <legend>Optionen</legend>
-          <label for="non_stop_only">Nur Direktflüge</label>
-          <input id="non_stop_only" type="checkbox" />
-          <br/>
+        <form id="form_search_options">
+          <!-- Search options for departures -->
+          <fieldset class="float_left">
+            <legend>Hinflug</legend>
 
-          <label for="max_price">Höchstpreis</label>
-          <input id="max_price" type="number" />
-          <br/>
-          
-          <input id="btn_search" type="submit" value="Suchen" />
-        </fieldset>
+            <label for="departure_date">Datum</label>
+            <input id="departure_date" type="date" />
+            <br/>
 
+            <label for="departure_from">Von</label>
+            <input id="departure_from" type="text"/>
+            <br/>
+
+            <div id="departure_from_list" tabindex="0">
+              <!-- Table of matching airports to be inserted here -->
+            </div>
+
+            <label for="departure_to">Nach</label>
+            <input id="departure_to" type="text"/>
+
+            <div id="departure_to_list">
+              <!-- Table of matching airports to be inserted here -->
+            </div>          
+          </fieldset>
+
+          <!-- Optional search options for arrivals -->
+          <fieldset class="float_left">
+            <legend>
+              <input type="checkbox" id="include_arrivals" name="include_arrivals" />
+              Rückflug
+            </legend>
+            <label for="arrival_date">Datum</label>
+            <input id="arrival_date" type="date" />
+            <br/>
+
+            <label for="arrival_from">Von</label>
+            <input id="arrival_from" type="text"/>
+            <br/>
+
+            <div id="arrival_from_list">
+              <!-- Table of matching airports to be inserted here -->
+            </div>          
+
+            <label for="arrival_to">Nach</label>
+            <input id="arrival_to" type="text"/>
+
+            <div id="arrival_to_list">
+              <!-- Table of matching airports to be inserted here -->
+            </div>          
+
+          </fieldset>
+
+          <!-- Further miscellaneous search options
+
+          Note: In the images on page
+          "4.5 CSS-Deklarationen" / "Fallbeispiel"
+          this fieldset is shown only on the browser screen, not on
+          the mobile device screen. The task description does not 
+          require that the fieldset should be hidden on mobile
+          devices, so it is not done here.
+          Also, if it were hidden it would be unclear which default
+          values to assume for the inputs.
+          -->
+          <fieldset class="float_left">
+            <legend>Optionen</legend>
+            <label for="non_stop_only">Nur Direktflüge</label>
+            <input id="non_stop_only" type="checkbox" />
+            <br/>
+
+            <label for="max_price">Höchstpreis</label>
+            <input id="max_price" type="number" />
+            <br/>
+            
+            <input id="btn_search" type="submit" value="Suchen" />
+          </fieldset>
+        </form>
       </fieldset>
 
       <fieldset>

@@ -9,37 +9,51 @@
  * - airportSearch.js
  */
 
-//#####################################
-function handleBtnSearchClick()
+var ignoreBtnSearchEvents = false;
+
+function handleTimeout()
 {
-    alert ("click");
+    ignoreBtnSearchEvents = false;
 }
 
-function handleBtnSearchTouch()
+
+function handleBtnSearch (strType)
 {
-    alert ("touch");
+    if (ignoreBtnSearchEvents)
+    {
+        //console.log ("Ignored event:", strType);
+        alert ("Ignored event: " + strType);
+        return;
+    }
+
+    ignoreBtnSearchEvents = true;
+    setTimeout (handleTimeout, 500);
+    showMatchingRoutes();
 }
+
+
+function handleBtnSearchClick()
+{
+    console.log ("click"); //#################
+    handleBtnSearch ("click");
+}
+
 
 function handleBtnSearchPtr()
 {
-    alert ("pointer");
+    console.log ("pointerdown"); //#################
+    handleBtnSearch ("pointerdown");
 }
-//#####################################
 
-function installSearchBtnClickHandler()
+
+function installSearchBtnHandlers()
 {
     let btnSearch = document.getElementById ("btn_search");
     if (btnSearch == null)
         return;
 
-    //####### btnSearch.addEventListener ("click", showMatchingRoutes);
-
-    //#####################################
     btnSearch.addEventListener ("click", handleBtnSearchClick);
-    btnSearch.addEventListener ("touchstart", handleBtnSearchTouch);
     btnSearch.addEventListener ("pointerdown", handleBtnSearchPtr);
-    //#####################################
-
 }
 
 
@@ -47,7 +61,7 @@ function installEventHandlers()
 {
     installAirportSearchEventHandlers();
     installRoutesSearchEventHandlers();
-    installSearchBtnClickHandler();
+    installSearchBtnHandlers();
 }
 
 

@@ -75,7 +75,7 @@ function handleBtnSearch (strType)
 
 function handleBtnSearchClick()
 {
-    console.log ("click"); //#################
+    console.log ("click"); //##################
     handleBtnSearch ("click");
 }
 

@@ -80,14 +80,14 @@ function getFlightFromToIATA (inputFromId, inputToId)
  * @param {array} aRoute - Array with details describing a flight route.
  * Must be structured like an element of array routes[] (routes_data.js)
  * 
- * @param {integer} nDayOfWeek - Day of week number (1..7, 1 == Mo)
+ * @param {integer} nDayOfWeek - Day of week number (0..6, 0 == Su)
  * 
  * @returns {string} - Departure time like "09:00" of flight on that day
  * of week. "0" means that the route is not served on that day.
  */
 function getFlightTime (aRoute, nDayOfWeek)
 {
-    if (nDayOfWeek < 1 || nDayOfWeek > 7)
+    if (nDayOfWeek < 0 || nDayOfWeek > 6)
     {
         console.log (`getFlightTime(): Invalid day of week: ${nDayOfWeek}`);
         return "0";
@@ -101,9 +101,15 @@ function getFlightTime (aRoute, nDayOfWeek)
         return "0";
     }
 
-    // Note that nDayOfWeek is 1-based (1 == Mo), but aDepTimes[]
-    // is 0-based (0 == Mo)
-    return aDepTimes[nDayOfWeek - 1];
+    // Both nDayOfWeek and aDepTimes[] are 0-based, but they start
+    // with different days:
+    // nDayOfWeek == 0: Sunday
+    // aSepTimes[0]: Monday
+    // Calculate index so that nDayOfWeek 1 becomes index 0:
+    let i = nDayOfWeek - 1;
+    if (i < 0)
+        i = 6;
+    return aDepTimes[i];
 }
 
 
@@ -115,8 +121,8 @@ function getFlightTime (aRoute, nDayOfWeek)
  * array in routes_data.js. Each element is an array of details of a
  * flight route.
  * 
- * @param {integer} nDayOfWeek - 1-based day of week of where 1 == Monday,
- * 2 = Tuesday ... Routes that are not served on that day will be excluded
+ * @param {integer} nDayOfWeek - 0-based day of week of where 0 == Sunday,
+ * 1 = Monday ... Routes that are not served on that day will be excluded
  * from the list.
  * @param {HTMLElement} parent - The parent element to which the table
  * should be added as a child. Usually a div element.
@@ -235,9 +241,9 @@ function showMatchingRoutesSingleDirection (inputFlightDateId, inputFromId, inpu
     }
 
     // Value: "2026-03-12"
-    // Calculate the day of week (1..7, 1 == Monday etc.)
-    const dateFlight = Temporal.PlainDate.from (inputFlightDate.value);
-    const nDayOfWeek = dateFlight.dayOfWeek;
+    // Calculate the day of week (0..6, 0 == Sunday etc.)
+    const dateFlight = new Date (inputFlightDate.value);
+    const nDayOfWeek = dateFlight.getDay();
 
     const oFlightFromToIATA = getFlightFromToIATA (inputFromId, inputToId);
     if (oFlightFromToIATA.fromIATA == null || oFlightFromToIATA.toIATA == null)
